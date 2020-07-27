@@ -1,0 +1,93 @@
+{% extends 'shop/basic.html'%}
+
+{% block title %}Contact Us {% endblock title %}
+{% block body %}
+<div class="container-fluid px-0 mb-4">
+    <img class="d-block w-100" src="https://www.yefindia.org/wp-content/uploads/2019/01/CONTACT-US.jpg"
+        style="height: 500px; width: 100%; display: block;" alt="...">
+</div>
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+
+    <form action="/shop/contact/" method="POST">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="form-group row">
+            <label for="{{field.id_for_label}}" class="col-sm-2 col-form-label">{{field.label}}</label>
+            <div class="col-sm-10">
+                {{field}}
+            </div>
+        </div>
+    {% endfor %}
+    <div class="text-center">
+        <button type="submit" class="btn btn-lg btn-primary my-5">Submit</button>
+    </div>
+    </form>
+</div>
+{% endblock body %}
+
+{% block js %}
+<script>
+// ***************************** POPUP OPERATIONS *******************************//
+// checking if out cart is null so make a cart for user
+    if (localStorage.getItem('cart') == null) {
+        var cart = {};
+    }
+    // if we have already a cart for user to parse it using JSON.parse string 
+    // to js object as localstorage.setItem can only set string 
+    else {
+        // string to js object or json file
+        var cart = JSON.parse(localStorage.getItem('cart'));
+        updateCart(cart);
+    }
+
+     $('#popcart').popover();
+        updatePopover(cart);
+        function updatePopover(cart) {
+            var popStr = "";
+            popStr = popStr + "<h5> Cart Items </h5>";
+
+            // is cart object is empty then do not add checkout and reset btn
+            if ($.isEmptyObject(cart)) {
+                popStr += "<h6>Oops Your Cart Is Empty!</h6>";
+            }
+            else {
+                // making popStr to carry all the html for cuurently selected items
+                var i = 1;
+                popStr += "<div class='mx-2 my-2'>";
+                for (var item in cart) {
+                    popStr = popStr + "<b>" + i + "</b>";
+                    // name + item = namepr<id>
+                    popStr = popStr + cart[item][1].slice(0, 19) + "... Qty: " + cart[item][0] + '<br>';
+                    i = i + 1;
+                }
+                // adding checkout and Reset button 
+                popStr = popStr + "</div> <a href='/shop/checkout'><button class='btn btn-primary' id ='checkout'>Checkout</button></a>";
+            }
+            // setting attribute of popover 
+            document.getElementById('popcart').setAttribute('data-content', popStr);
+
+        }
+                // update cart for click add + and - button if the qty is > 0
+        function updateCart(cart) {
+            let sum = 0;
+            for (var item in cart) {
+                sum += cart[item][0];
+            }
+            document.getElementById('cart').innerHTML = sum;
+            updatePopover(cart);
+        }
+// ***************************** POPUP OPERATIONS END *******************************//
+
+</script>
+{% endblock js %}

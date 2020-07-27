@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        
+
+    <title> MyCart | {% block title %} {% endblock  %}</title>
+    
+    <style>
+        #page-content {
+            flex: 1 0 auto;
+        }
+
+        #sticky-footer {
+            flex-shrink: none;
+        }
+
+        #footerId {
+            margin-top: 20vh;
+            min-height: 40vh;
+            background: #007bff;
+            background: linear-gradient(to right, #0062E6, #33AEFF);
+        }
+        {% block css %}
+        {% endblock %}
+    </style>
+</head>
+
+<body>
+
+    <!--#################### Navigation Bar  ######################-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/shop">My Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/shop">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/shop/about">About Us <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/shop/tracker">Tracker <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/shop/contact">Contact Us <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/blog">Blog <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+            <form action="/shop/search/" method="GET" class="form-inline col-md-6">
+                {% csrf_token %}
+                <input class="form-control mr-sm-2 col-md-10" id="search" name="search" type="search"
+                    placeholder="Search" aria-label="Search" required>
+                <button class="btn btn-outline-warning my-2 my-sm-0 " type="submit">Search</button>
+            </form>
+ 
+            {% if user.is_anonymous %}
+                <a class="btn btn-success mx-2" id='login-btn'href="/shop/login/" role="button">Login</a>
+            {% else %}
+                <div class="dropdown show">
+                <a class="btn btn-dark dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{user.first_name}} {{user.last_name}}
+                </a>
+
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item bg-light" href="/shop/myorders">My Orders</a>
+                    <a class="dropdown-item bg-danger text-light" id='login-btn' href="/shop/logout/" role="button">Logout</a>
+                </div>
+                </div>
+            {% endif %}
+            
+            <button type="button" class="btn btn-warning ml-2" id="popcart" data-container="body" data-html="true" data-toggle="popover" data-placement="bottom" 
+            data-content="Cart">
+                cart(<span id="cart">0</span>)
+            </button>
+        </div>
+    </nav>
+    <!--#################### Navigation Bar End ######################-->
+
+    {% block message %}{% endblock message %}
+    {% block body %}        {% endblock body %}
+    <!-- Footer -->
+
+    <!-- Footer -->
+    <div class="d-flex flex-column" id="footerId">
+        <div id="page-content">
+            <div class="container text-center">
+                <div class="row justify-content-center">
+                    <div class="col-md-7">
+                        <h1 class="font-weight-light mt-4 text-white">MyCart</h1>
+                        <p class="lead text-white-50">
+                            MyCart Private Limited, d/b/a MyCart is an Indian e-commerce company based in Bengaluru, India. It was founded by Akshat Singh in 2020. The company initially focused on book sales, before expanding into other product categories such as consumer electronics, fashion, home essentials & groceries, and lifestyle products.
+                            The service competes primarily with Amazon's Indian subsidiary, and the domestic rival Snapdeal. As of March 2020, Flipkart held a 39.5% market share of India's e-commerce industry. MyCart is significantly dominant in the sale of apparel (a position that was bolstered by its acquisitions of Myntra and Jabong.com), and was described as being "neck and neck" with Amazon in the sale of electronics and mobile phones. MyCart also owns PhonePe, a mobile payments service based on the Unified Payments Interface (UPI).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer id="sticky-footer" class="py-4 bg-dark text-white-50">
+            <div class="container text-center">
+                <small>Copyright 2020 &copy; MyBlog</small>
+            </div>
+        </footer>
+    </div>
+    <!-- Footer -->
+    <!-- Footer -->
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+<script>
+
+</script>
+    <!-- Here we write our Js-->
+    {% block js %} {% endblock js %}
+</body>
+
+</html>

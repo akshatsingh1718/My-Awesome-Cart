@@ -1,0 +1,276 @@
+{% extends 'shop/basic.html' %}
+{% block title %}
+Home | MyCart
+{% endblock title %}
+{% block css %}
+.col-md-3
+{
+display: inline-block;
+margin-left:-4px;
+}
+
+.carousel-indicators .active {
+background-color: blue;
+}
+
+.col-md-3 img{
+width: 170px;
+height: 200px;
+
+}
+
+body .carousel-indicator li{
+background-color: blue;
+}
+.carousel-indicators li{
+background-color: #7270fc;
+}
+
+body .carousel-indicators{
+bottom: -40px;
+}
+
+body .carousel-control-prev-icon,
+body .carousel-control-next-icon{
+padding: 20px;
+background-color: blue;
+}
+
+.carousel-control-prev,
+.carousel-control-next{
+top: auto;
+bottom: auto;
+padding-top:200px;
+}
+body .no-padding{
+padding-left: 0,
+padding-right: 0;
+}
+{% endblock %}
+
+{% comment %} thankyou Alert message {% endcomment %}
+{% block message %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show my-0" role="alert">
+    <Strong>{{ message }}</Strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock message %}
+
+
+{% block body %}
+{% load static %}
+<div class="container my-5">
+
+    {% for product, range, nslides in allProds %}
+    <div class="container-fluid mt-1 mb-4">
+        <div class="card bg-primary text-white text-center p-3" style="margin-top: 20px;">
+            <blockquote class="blockquote mb-0">
+                <h1><strong>{{product.0.category}} - Recomended for you</strong> </h1>
+            </blockquote>
+        </div>
+    </div>
+    <div class="row">
+        <div id="demo{{forloop.counter}}" class="col carousel slide my-3" data-ride="carousel">
+            <ul class="carousel-indicators">
+                <li data-target="#demo{{forloop.counter}}" data-slide-to="0" class="active"></li>
+                {% for i in  range%}
+                <li data-target="#demo{{forloop.parentloop.counter}}" data-slide-to="{{i}}"></li>
+                {% endfor %}
+            </ul>
+
+            <!--###################### Slide Show Start ########################-->
+            <div class="container carousel-inner no-padding">
+                <!-- Card Row 1 Start -->
+                <div class="carousel-item active">
+
+                    <!-- For loop to iterate through all the Product objects using Django slicing syntax -->
+                    {% for i in product%}
+                    <div class="col-xs-3 col-sm-3 col-md-3">
+                        <div class="card align-items-center" style="width: 18rem;">
+                            <img src='/media/{{i.image}}' class="card-img-top" alt="{{i.image}}">
+                            <div class="card-body">
+                                <h5 class="card-title" id="namepr{{i.id}}">{{i.product_name}}</h5>
+                                <p class="card-text">{{i.desc|slice:"0:30"}}...</p>
+                                <h6 class="cart-title">Price <span id="pricepr{{i.id}}">{{i.price}}</span></h6>
+                                <span id="divpr{{i.id}}" class="divpr">
+                                {% if not user.is_anonymous %}
+                                    <button id="pr{{i.id}}" class="btn btn-warning cart">Add To
+                                            Cart</button>
+                                {% endif %}
+                                </span>
+
+                                <a id="qv{{i.id}}" href="/shop/productview/{{i.id}}"
+                                    class="btn btn-info cart text-white">QuickView</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if forloop.counter|divisibleby:4 and forloop.counter > 0 and not forloop.last %}
+                </div>
+                <div class="carousel-item">
+                    {% endif %}
+                    {% endfor%}
+                </div>
+            </div>
+        </div>
+
+        <!--###################### Slide Show End ########################-->
+
+        <!-- ###### left and right controls for the slide ######-->
+        <a class="carousel-control-prev" href="#demo{{forloop.counter}}" data-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#demo{{forloop.counter}}" data-slide="next">
+            <span class="carousel-control-next-icon"></span>
+            <!--###### left and right controls for the slide ######-->
+        </a>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock body %}
+
+
+
+{% block js %}
+<script>
+
+    // checking if out cart is null so make a cart for user
+    if (localStorage.getItem('cart') == null) {
+        var cart = {};
+    }
+    // if we have already a cart for user to parse it using JSON.parse string 
+    // to js object as localstorage.setItem can only set string 
+    else {
+        // string to js object or json file
+        var cart = JSON.parse(localStorage.getItem('cart'));
+        updateCart(cart);
+    }
+
+    // JQuery for managing user Add to Cart click
+    {% comment %} $('.cart').click(function () {{% endcomment %}
+        $('.divpr').on('click', 'button.cart', function () {
+            // grabbing id of specific item
+            idstr = this.id.toString();
+            // If the clicked item is not present in the list then set it's value to 1
+            if (cart[idstr] == undefined) {
+                qty = 1;
+                name = document.getElementById('name' + idstr).innerHTML;
+                price = document.getElementById('price' + idstr).innerHTML;
+                cart[idstr] = [qty, name, parseInt(price)];
+            }
+            // else increment it by one
+            else {
+                cart[idstr][0] = cart[idstr][0] + 1;
+            }
+
+            // updating cart value showing in popover
+            updateCart(cart);
+        });
+
+        // this is to activate popover when click
+        $('#popcart').popover();
+        updatePopover(cart);
+        function updatePopover(cart) {
+            var popStr = "";
+            popStr = popStr + "<h5> Cart Items </h5>";
+
+            // is cart object is empty then do not add checkout and reset btn
+            if ($.isEmptyObject(cart)) {
+                popStr += "<h6>Oops Your Cart Is Empty!</h6>";
+            }
+            else {
+                // making popStr to carry all the html for cuurently selected items
+                var i = 1;
+                popStr += "<div class='mx-2 my-2'>";
+                for (var item in cart) {
+                    popStr = popStr + "<b>" + i + "</b>";
+                    // name + item = namepr<id>
+                    popStr = popStr + document.getElementById('name' + item).innerHTML.slice(0, 19) + "... Qty: " + cart[item][0] + '<br>';
+                    i = i + 1;
+                }
+                // adding checkout and Reset button 
+                popStr = popStr + "</div> <a href='/shop/checkout'><button class='btn btn-primary' id ='checkout'>Checkout</button></a> <button class='btn btn-primary' onclick='clearCart()' id ='clearCart'>Clear Cart</button>";
+            }
+            // setting attribute of popover 
+            document.getElementById('popcart').setAttribute('data-content', popStr);
+            // showing pop over after changes
+            {% comment %} $('#popcart').popover('show'); {% endcomment %}
+        }
+
+        // functio to clear cart
+        function clearCart() {
+            cart = JSON.parse(localStorage.getItem('cart'));
+            for (var item in cart) {
+                //document.getElementById('div' +item).innerHTML = '<button id="'+ item +'" class="btn btn-primary cart">Add To Cart</button>';
+                resetToAddToCartBtn(item);
+            }
+            //clearing all the items from local storage
+            localStorage.clear();
+            // empty set of items
+            cart = {};
+            // update with empty cart
+            updateCart(cart);
+        }
+
+
+        // update cart for click add + and - button if the qty is > 0
+        function updateCart(cart) {
+            let sum = 0;
+            for (var item in cart) {
+                sum += cart[item][0];
+                document.getElementById('div'+item).innerHTML = "<button id='minus" + item + "' class='btn btn-danger minus'>-</button><span class='mx-2'id='val" + item + "'>" + cart[item][0] + "</span><button id='plus" + item + "' class='btn btn-success plus'>+</button>";
+            }
+            document.getElementById('cart').innerHTML = sum;
+            /*
+                A common use of JSON is to exchange data to/from a web server.
+                When sending data to a web server, the data has to be a string.
+                Convert a JavaScript object into a string with JSON.stringify().
+            */
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updatePopover(cart);
+        }
+
+        // on click of + button 
+        $(".divpr").on('click', 'button.plus', function () {
+            a = this.id.slice(6);
+            cart['pr' + a][0] += 1;
+            // valpr is the number displayed in the add to cart button
+            document.getElementById('valpr'+a).innerHTML = cart['pr' + a][0];
+            updateCart(cart);
+        });
+        //on click of - button
+        $(".divpr").on("click", 'button.minus', function () {
+            a = this.id.slice(7);
+            cart['pr' + a][0] -= 1;
+            cart['pr' + a][0] = Math.max(0, cart['pr' + a][0]);
+            // if item quantity is 0 then remove key from localStorage
+            if (cart['pr' + a][0] === 0) {
+                removeKeyFromLocalStorage('pr' + a);
+            } else {
+                document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+            }
+            updateCart(cart);
+        })
+
+        // function to remove a key from localStorage
+        function removeKeyFromLocalStorage(key) {
+            // delete is used to del object and it has no effect on variables and functions
+            delete cart[key];
+            // resetting key to Add To Cart Button
+            resetToAddToCartBtn(key);
+        }
+
+        // resert to AddToCartBtn
+        function resetToAddToCartBtn(item) {
+            document.getElementById('div' + item).innerHTML = '<button id="' + item + '" class="btn btn-primary cart">Add To Cart</button>';
+        }
+</script>
+{% endblock js  %}

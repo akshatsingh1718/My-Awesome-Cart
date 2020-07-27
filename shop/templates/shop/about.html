@@ -1,0 +1,103 @@
+{% extends 'shop/basic.html'%}
+
+{% block title %}About Page {% endblock title %}
+{% block body %} 
+<main role="main">
+
+  <!-- Main jumbotron for a primary marketing message or call to action -->
+  <div class="jumbotron">
+    <div class="container">
+      <h1 class="display-3">My Cart</h1>
+      <p>
+        MyCart Private Limited, d/b/a MyCart is an Indian e-commerce company based in Bengaluru, India. It was founded by Akshat Singh in 2020. The company initially focused on book sales, before expanding into other product categories such as consumer electronics, fashion, home essentials & groceries, and lifestyle products.
+        The service competes primarily with Amazon's Indian subsidiary, and the domestic rival Snapdeal. As of March 2020, Flipkart held a 39.5% market share of India's e-commerce industry. MyCart is significantly dominant in the sale of apparel (a position that was bolstered by its acquisitions of Myntra and Jabong.com), and was described as being "neck and neck" with Amazon in the sale of electronics and mobile phones. MyCart also owns PhonePe, a mobile payments service based on the Unified Payments Interface (UPI).
+      </p>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="container-fluid mt-1 mb-4">
+      <div class="bg-primary text-black text-center py-3 rounded">
+          <strong><h1>Our Stores</h1></strong>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Delhi, India</h2>
+        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+      </div>
+      <div class="col-md-4">
+        <h2>Ukraine, Russia</h2>
+        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+      </div>
+      <div class="col-md-4">
+        <h2>Silicon Valley, California</h2>
+        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+      </div>
+    </div>
+
+    <hr>
+
+  </div> <!-- /container -->
+
+</main>
+
+{% endblock body %}
+
+{% block js %}
+<script>
+
+
+// ***************************** POPUP OPERATIONS *******************************//
+// checking if out cart is null so make a cart for user
+    if (localStorage.getItem('cart') == null) {
+        var cart = {};
+    }
+    // if we have already a cart for user to parse it using JSON.parse string 
+    // to js object as localstorage.setItem can only set string 
+    else {
+        // string to js object or json file
+        var cart = JSON.parse(localStorage.getItem('cart'));
+        updateCart(cart);
+    }
+
+     $('#popcart').popover();
+        updatePopover(cart);
+        function updatePopover(cart) {
+            var popStr = "";
+            popStr = popStr + "<h5> Cart Items </h5>";
+
+            // is cart object is empty then do not add checkout and reset btn
+            if ($.isEmptyObject(cart)) {
+                popStr += "<h6>Oops Your Cart Is Empty!</h6>";
+            }
+            else {
+                // making popStr to carry all the html for cuurently selected items
+                var i = 1;
+                popStr += "<div class='mx-2 my-2'>";
+                for (var item in cart) {
+                    popStr = popStr + "<b>" + i + "</b>";
+                    // name + item = namepr<id>
+                    popStr = popStr + cart[item][1].slice(0, 19) + "... Qty: " + cart[item][0] + '<br>';
+                    i = i + 1;
+                }
+                // adding checkout and Reset button 
+                popStr = popStr + "</div> <a href='/shop/checkout'><button class='btn btn-primary' id ='checkout'>Checkout</button></a>";
+            }
+            // setting attribute of popover 
+            document.getElementById('popcart').setAttribute('data-content', popStr);
+
+        }
+                // update cart for click add + and - button if the qty is > 0
+        function updateCart(cart) {
+            let sum = 0;
+            for (var item in cart) {
+                sum += cart[item][0];
+            }
+            document.getElementById('cart').innerHTML = sum;
+            updatePopover(cart);
+        }
+// ***************************** POPUP OPERATIONS END *******************************//
+</script>
+{% endblock js %}

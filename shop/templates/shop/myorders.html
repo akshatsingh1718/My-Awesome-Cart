@@ -1,0 +1,116 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %} MyOrders {% endblock title %}
+
+{% block body %}
+<div class="container-fluid mt-1 mb-4">
+    <div class="bg-primary text-white text-center p-3">
+        <blockquote class="blockquote mb-0">
+            <h1><strong>Your Orders</strong> </h1>
+        </blockquote>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row my-2">
+        {% for order in orders %}
+            <div class="col-md-6">
+                <div class="card flex-md-row mb-4 shadow-sm h-md-250" id='{{order.product.pk}}'>
+                    <div class="card-body d-flex flex-column align-items-start" >
+                        <h3><strong class="d-inline-block text-primary">{{order.product.product_name}}</strong></h3>
+                        <strong><div class="mb-1 text-muted">{{order.product.category}}</div></strong>
+                        <h4 class="mb-0"><strong>Price {{order.product.price}}</strong></h4>
+                        <h4><strong class="d-inline-block text-dark">Qty:</strong>
+                        <strong class="d-inline-block text-dark">{{order.qty}}</strong></h4>
+                        <div class="cancelOrder">
+                            <button class="btn btn-danger my-2 cancel" id='{{order.product.id}}'>Cancel this product</button>
+                        </div>
+                    </div>
+                    <img class="card-img-right flex-auto d-none d-lg-block" alt="Thumbnail [200x250]" style="width: 200px; height: 250px;" 
+                    src="/media/{{order.product.image}}" data-holder-rendered="true"/>
+                </div>
+            </div>
+            {% if forloop.counter|divisibleby:2 %}
+                </div>
+                <div class="row my-2">
+            {% endif %}
+        {% endfor %}
+    </div>
+<div>
+
+{% endblock body %}
+
+{% block js %}
+<script>
+//***************** Card Hover Shadow and cursor effect ******************//
+    $(document).ready(function() {
+    // executes when HTML-Document is loaded and DOM is ready  
+    $('.card').click(function(){
+        id =this.id;
+        window.location.href = `/shop/productview/${id}`;
+    })
+    $( ".card" ).hover(
+    function() {
+        $(this).addClass('shadow-lg').css('cursor', 'pointer'); 
+    }, function() {
+        $(this).removeClass('shadow-lg');
+    }
+    );
+    });
+//****************// Card Hover Shadow and cursor effect //**************//
+    
+    $('.cancelOrder').on('click','button.cancel',function(){
+        id = this.id.toString();
+        
+    });
+
+    // checking if out cart is null so make a cart for user
+    if (localStorage.getItem('cart') == null) {
+        var cart = {};
+    }
+    // if we have already a cart for user to parse it using JSON.parse string 
+    // to js object as localstorage.setItem can only set string 
+    else {
+        // string to js object or json file
+        var cart = JSON.parse(localStorage.getItem('cart'));
+        updateCart(cart);
+    }
+
+     $('#popcart').popover();
+        updatePopover(cart);
+        function updatePopover(cart) {
+            var popStr = "";
+            popStr = popStr + "<h5> Cart Items </h5>";
+
+            // is cart object is empty then do not add checkout and reset btn
+            if ($.isEmptyObject(cart)) {
+                popStr += "<h6>Oops Your Cart Is Empty!</h6>";
+            }
+            else {
+                // making popStr to carry all the html for cuurently selected items
+                var i = 1;
+                popStr += "<div class='mx-2 my-2'>";
+                for (var item in cart) {
+                    popStr = popStr + "<b>" + i + "</b>";
+                    // name + item = namepr<id>
+                    popStr = popStr + cart[item][1].slice(0, 19) + "... Qty: " + cart[item][0] + '<br>';
+                    i = i + 1;
+                }
+                // adding checkout and Reset button 
+                popStr = popStr + "</div> <a href='/shop/checkout'><button class='btn btn-primary' id ='checkout'>Checkout</button></a>";
+            }
+            // setting attribute of popover 
+            document.getElementById('popcart').setAttribute('data-content', popStr);
+
+        }
+                // update cart for click add + and - button if the qty is > 0
+        function updateCart(cart) {
+            let sum = 0;
+            for (var item in cart) {
+                sum += cart[item][0];
+            }
+            document.getElementById('cart').innerHTML = sum;
+            updatePopover(cart);
+        }
+</script>
+{% endblock js %}
