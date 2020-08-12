@@ -25,7 +25,7 @@ SECRET_KEY = ')6xuo3sg97yay7mtq%p&chough^r=lvnw6=e#llp=!w-v5lpl$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -140,7 +140,7 @@ if os.getcwd() == '/app':
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
     # Allow all host headers
-    ALLOWED_HOSTS = ['hellodevdennis.herokuapp.com']
+    ALLOWED_HOSTS = ['my-awesome-cart-s.herokuapp.com', '127.0.0.1']
     DEBUG = True
 
     # Static asset configuration
