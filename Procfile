@@ -1,0 +1,1 @@
+web: gununicorn s.wsgi --log-file -
