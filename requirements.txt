@@ -209,7 +209,7 @@ Twisted==20.3.0
 txaio==20.4.1
 ujson==1.35
 unicodecsv==0.14.1
-urllib3==1.25.8
+urllib3==1.26.5
 virtualenv==20.0.20
 virtualenv-clone==0.5.4
 watchdog==0.10.2
